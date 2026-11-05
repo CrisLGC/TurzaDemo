@@ -5,6 +5,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Boxes,
+  Building2,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -12,22 +13,32 @@ import {
   ChevronRight,
   ClipboardCheck,
   Clock3,
+  CreditCard,
+  Database,
+  DollarSign,
   Factory,
   FileText,
   Gauge,
   LayoutDashboard,
+  LockKeyhole,
+  Mail,
+  MapPin,
   Menu,
   MoreHorizontal,
   PackageCheck,
   PackageOpen,
+  Phone,
   Plus,
   Search,
   Settings,
   ShieldCheck,
   ShoppingCart,
+  SlidersHorizontal,
   ThermometerSnowflake,
   Truck,
+  UserPlus,
   Users,
+  WalletCards,
   Warehouse,
   X,
 } from "lucide-react";
@@ -38,7 +49,10 @@ type Page =
   | "inventario"
   | "pedidos"
   | "calidad"
-  | "despachos";
+  | "despachos"
+  | "clientes"
+  | "finanzas"
+  | "configuracion";
 
 type NavItem = {
   id: Page;
@@ -55,6 +69,14 @@ const navigation: NavItem[] = [
   { id: "calidad", label: "Control de calidad", icon: ShieldCheck },
   { id: "despachos", label: "Despachos", icon: Truck, badge: "3" },
 ];
+
+const administration: NavItem[] = [
+  { id: "clientes", label: "Clientes", icon: Users },
+  { id: "finanzas", label: "Finanzas", icon: FileText },
+  { id: "configuracion", label: "Configuración", icon: Settings },
+];
+
+const allNavigation = [...navigation, ...administration];
 
 const products = [
   { name: "Jamón cocido estándar", presentation: "Pieza 5 kg", stock: 342, unit: "pzas", status: "Óptimo", tone: "green" },
@@ -202,7 +224,7 @@ function Production({ openModal }: { openModal: () => void }) {
           {productionOrders.map((order, index) => (
             <div className="order-card" key={order.id}>
               <div className="order-card-head"><div className={`product-mark product-mark-${order.color}`}><Factory size={21} /></div><div><span>{order.id}</span><h3>{order.product}</h3></div><Badge tone={index === 0 ? "green" : index === 1 ? "blue" : "neutral"}>{order.stage}</Badge></div>
-              <div className="order-data"><div><span>Lote</span><strong>{order.batch}</strong></div><div><span>Meta</span><strong>{order.target}</strong></div><div><span>Responsable</span><strong>{["M. Rincones", "A. Suárez", "J. García"][index]}</strong></div></div>
+              <div className="order-data"><div><span>Lote</span><strong>{order.batch}</strong></div><div><span>Meta</span><strong>{order.target}</strong></div><div><span>Responsable</span><strong>{["Usuario Prueba", "A. Suárez", "J. García"][index]}</strong></div></div>
               <div className="row-top"><span>Avance del lote</span><strong>{order.progress}%</strong></div>
               <div className="progress large"><i style={{ width: `${order.progress}%` }} /></div>
               <div className="timeline"><span className="done"><Check size={12} /> Pesaje</span><i /><span className={index < 2 ? "done" : "active"}><Check size={12} /> Mezcla</span><i /><span className={index === 0 ? "active" : ""}>Proceso</span><i /><span>Empaque</span></div>
@@ -297,19 +319,122 @@ function Dispatches() {
   );
 }
 
+function Clients() {
+  const clients = [
+    { initials: "DC", name: "Distribuidora Centro Norte", rif: "J-40128563-7", contact: "Andrea Salazar", zone: "Valencia Norte", balance: "$3.420", sales: "$18.760", status: "Activo" },
+    { initials: "CE", name: "Charcutería La Estancia", rif: "J-30984512-4", contact: "Miguel Pérez", zone: "Naguanagua", balance: "$1.180", sales: "$12.340", status: "Activo" },
+    { initials: "MS", name: "Mercado San Diego", rif: "J-50192834-2", contact: "Laura Gómez", zone: "San Diego", balance: "$0", sales: "$9.860", status: "Al día" },
+    { initials: "SV", name: "Suministros Valencia", rif: "J-29876140-9", contact: "Carlos Ruiz", zone: "Valencia Centro", balance: "$5.760", sales: "$16.420", status: "Por cobrar" },
+    { initials: "BP", name: "Bodegón El Portal", rif: "J-41290756-1", contact: "María Salazar", zone: "Guacara", balance: "$740", sales: "$7.980", status: "Activo" },
+  ];
+
+  return (
+    <>
+      <PageHeader eyebrow="GESTIÓN COMERCIAL" title="Clientes" description="Centraliza condiciones comerciales, crédito, contactos y comportamiento de compra." action={<button className="primary-button"><UserPlus size={17} /> Nuevo cliente</button>} />
+      <section className="metric-grid compact">
+        <Metric label="Clientes activos" value="86" note="7 nuevos este mes" trend="up" icon={Users} />
+        <Metric label="Ventas recurrentes" value="74%" note="Sobre venta mensual" icon={ShoppingCart} tone="gold" />
+        <Metric label="Crédito otorgado" value="$64.500" note="42% utilizado" icon={CreditCard} tone="blue" />
+        <Metric label="Cartera por cobrar" value="$11.100" note="3 facturas vencidas" icon={WalletCards} tone="rose" />
+      </section>
+      <article className="panel page-panel">
+        <div className="panel-heading customer-tools">
+          <div><p className="eyebrow">CARTERA COMERCIAL</p><h2>Directorio de clientes</h2></div>
+          <div className="toolbar"><label className="inline-search"><Search size={16} /><input placeholder="Buscar cliente o RIF" /></label><button className="secondary-button"><SlidersHorizontal size={15} /> Filtros</button></div>
+        </div>
+        <div className="table-wrap customer-table"><table><thead><tr><th>Cliente</th><th>Contacto</th><th>Zona</th><th>Venta mensual</th><th>Saldo</th><th>Estado</th><th /></tr></thead><tbody>{clients.map((client) => <tr key={client.rif}><td><div className="client-cell"><span className="client-avatar">{client.initials}</span><div><strong>{client.name}</strong><small>{client.rif}</small></div></div></td><td><strong>{client.contact}</strong><small>Compras</small></td><td>{client.zone}</td><td><strong>{client.sales}</strong></td><td><strong>{client.balance}</strong></td><td><Badge tone={client.status === "Por cobrar" ? "amber" : "green"}>{client.status}</Badge></td><td><button className="icon-button"><ChevronRight size={17} /></button></td></tr>)}</tbody></table></div>
+      </article>
+      <div className="client-bottom-grid">
+        <article className="panel"><div className="panel-heading"><div><p className="eyebrow">SEGMENTACIÓN</p><h2>Clientes por canal</h2></div><Users size={20} /></div><div className="channel-list"><div><span>Distribuidores</span><strong>24</strong><i><b style={{ width: "82%" }} /></i></div><div><span>Charcuterías</span><strong>38</strong><i><b style={{ width: "66%" }} /></i></div><div><span>Restaurantes</span><strong>16</strong><i><b style={{ width: "43%" }} /></i></div><div><span>Víveres y bodegones</span><strong>8</strong><i><b style={{ width: "28%" }} /></i></div></div></article>
+        <article className="panel"><div className="panel-heading"><div><p className="eyebrow">OPORTUNIDADES</p><h2>Seguimiento comercial</h2></div><button className="text-button">Ver agenda <ChevronRight size={16} /></button></div><div className="followup-list"><div><span className="activity-icon"><Phone size={15} /></span><div><strong>Renovación de lista de precios</strong><span>Distribuidora Centro Norte · Hoy, 2:00 PM</span></div></div><div><span className="activity-icon blue"><Mail size={15} /></span><div><strong>Enviar propuesta mayorista</strong><span>Supermercado La Colina · Mañana</span></div></div><div><span className="activity-icon gold"><MapPin size={15} /></span><div><strong>Visita comercial programada</strong><span>Abastos del Este · Viernes, 10:30 AM</span></div></div></div></article>
+      </div>
+    </>
+  );
+}
+
+function Finance() {
+  const movements = [
+    { ref: "FAC-4821", detail: "Distribuidora Centro Norte", type: "Cobro de factura", date: "Hoy · 10:42 AM", amount: "+$4.860", tone: "income" },
+    { ref: "PAG-1934", detail: "Avícola Central, C.A.", type: "Pago a proveedor", date: "Hoy · 9:18 AM", amount: "-$2.740", tone: "expense" },
+    { ref: "FAC-4819", detail: "Mercado San Diego", type: "Venta de contado", date: "Ayer · 4:36 PM", amount: "+$6.120", tone: "income" },
+    { ref: "PAG-1931", detail: "Empaques del Centro", type: "Material de empaque", date: "Ayer · 2:15 PM", amount: "-$1.280", tone: "expense" },
+  ];
+  const bars = [54, 68, 46, 78, 63, 86, 72, 91, 76, 88, 67, 82];
+
+  return (
+    <>
+      <PageHeader eyebrow="CONTROL FINANCIERO" title="Finanzas" description="Visibilidad sobre caja, cobranza, compromisos y rentabilidad operativa." action={<button className="primary-button"><Plus size={17} /> Registrar movimiento</button>} />
+      <section className="metric-grid compact">
+        <Metric label="Saldo disponible" value="$46.820" note="3 cuentas operativas" icon={WalletCards} />
+        <Metric label="Ingresos del mes" value="$84.620" note="12,8% vs. octubre" trend="up" icon={ArrowUpRight} tone="gold" />
+        <Metric label="Cuentas por cobrar" value="$11.100" note="$2.340 vencidos" icon={CreditCard} tone="blue" />
+        <Metric label="Margen bruto" value="31,4%" note="1,9% sobre la meta" trend="up" icon={Gauge} tone="rose" />
+      </section>
+      <div className="finance-grid">
+        <article className="panel cashflow-panel">
+          <div className="panel-heading"><div><p className="eyebrow">ÚLTIMOS 12 MESES</p><h2>Flujo de ingresos y egresos</h2></div><select className="period-select"><option>Este año</option><option>Últimos 6 meses</option></select></div>
+          <div className="chart-summary"><div><span>Ingresos</span><strong>$486.240</strong></div><div><span>Egresos</span><strong>$331.870</strong></div><div><span>Resultado</span><strong className="positive">+$154.370</strong></div></div>
+          <div className="bar-chart">{bars.map((height, index) => <div className="bar-column" key={index}><div><i style={{ height: `${height}%` }} /><b style={{ height: `${Math.max(24, height - 28)}%` }} /></div><span>{["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][index]}</span></div>)}</div>
+          <div className="chart-legend"><span><i className="legend-income" /> Ingresos</span><span><i className="legend-expense" /> Egresos</span></div>
+        </article>
+        <article className="panel accounts-panel">
+          <div className="panel-heading"><div><p className="eyebrow">DISPONIBILIDAD</p><h2>Cuentas y cajas</h2></div><button className="icon-button"><MoreHorizontal size={18} /></button></div>
+          <div className="account-list"><div><span className="account-icon"><Building2 size={18} /></span><div><strong>Banco Nacional</strong><span>Cuenta corriente · 0842</span></div><b>$28.460</b></div><div><span className="account-icon gold"><DollarSign size={18} /></span><div><strong>Cuenta USD</strong><span>Operaciones comerciales</span></div><b>$16.280</b></div><div><span className="account-icon neutral"><WalletCards size={18} /></span><div><strong>Caja principal</strong><span>Planta Valencia</span></div><b>$2.080</b></div></div>
+          <button className="secondary-button full-button">Conciliar cuentas</button>
+        </article>
+      </div>
+      <article className="panel page-panel"><div className="panel-heading"><div><p className="eyebrow">ACTIVIDAD RECIENTE</p><h2>Últimos movimientos</h2></div><button className="text-button">Ver libro completo <ChevronRight size={16} /></button></div><div className="movement-list">{movements.map((movement) => <div key={movement.ref}><span className={`movement-icon ${movement.tone}`}><DollarSign size={16} /></span><div><strong>{movement.detail}</strong><span>{movement.type} · {movement.ref}</span></div><time>{movement.date}</time><b className={movement.tone}>{movement.amount}</b></div>)}</div></article>
+    </>
+  );
+}
+
+function Configuration() {
+  return (
+    <>
+      <PageHeader eyebrow="ADMINISTRACIÓN DEL SISTEMA" title="Configuración" description="Personaliza los datos de empresa, preferencias operativas y accesos." action={<button className="primary-button"><Check size={17} /> Guardar cambios</button>} />
+      <div className="settings-layout">
+        <aside className="settings-nav panel"><button className="active"><Building2 size={17} /><span>Empresa</span><ChevronRight size={15} /></button><button><Users size={17} /><span>Usuarios y roles</span><ChevronRight size={15} /></button><button><SlidersHorizontal size={17} /><span>Operación</span><ChevronRight size={15} /></button><button><CreditCard size={17} /><span>Monedas y pagos</span><ChevronRight size={15} /></button><button><LockKeyhole size={17} /><span>Seguridad</span><ChevronRight size={15} /></button><button><Database size={17} /><span>Datos y respaldo</span><ChevronRight size={15} /></button></aside>
+        <div className="settings-content">
+          <article className="panel settings-section"><div className="settings-title"><span className="settings-icon"><Building2 size={20} /></span><div><h2>Información de la empresa</h2><p>Datos visibles en documentos, reportes y comunicaciones.</p></div></div><div className="settings-form"><label className="full"><span>Nombre comercial</span><input defaultValue="Embutidos Turza" /></label><label><span>Razón social</span><input defaultValue="Alimentos Turza, C.A." /></label><label><span>RIF</span><input defaultValue="J-00000000-0" /></label><label><span>Teléfono</span><input defaultValue="+58 412-8278888" /></label><label><span>Correo comercial</span><input defaultValue="ventas@embutidosturza.com" /></label><label className="full"><span>Dirección fiscal</span><input defaultValue="Valencia, estado Carabobo, Venezuela" /></label></div></article>
+          <article className="panel settings-section"><div className="settings-title"><span className="settings-icon gold"><SlidersHorizontal size={20} /></span><div><h2>Preferencias operativas</h2><p>Parámetros generales utilizados en toda la demo.</p></div></div><div className="preference-list"><div><div><strong>Control de lotes obligatorio</strong><span>Exigir lote y vencimiento en cada movimiento.</span></div><button className="switch active" aria-label="Control de lotes activo"><i /></button></div><div><div><strong>Despacho por FEFO</strong><span>Priorizar automáticamente los lotes que vencen primero.</span></div><button className="switch active" aria-label="FEFO activo"><i /></button></div><div><div><strong>Alertas de inventario</strong><span>Notificar mínimos y próximos vencimientos.</span></div><button className="switch active" aria-label="Alertas activas"><i /></button></div><div><div><strong>Aprobación doble de ajustes</strong><span>Solicitar autorización para ajustes mayores a $500.</span></div><button className="switch" aria-label="Aprobación doble inactiva"><i /></button></div></div></article>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function NewProductionModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
-  return <div className="modal-backdrop" onMouseDown={onClose}><div className="modal" onMouseDown={(event) => event.stopPropagation()}><header><div><p className="eyebrow">PLAN DE PLANTA</p><h2>Nueva orden de producción</h2></div><button className="icon-button" onClick={onClose}><X size={20} /></button></header><div className="form-grid"><label><span>Producto</span><select defaultValue="Jamón cocido estándar"><option>Jamón cocido estándar</option><option>Salchicha de pollo</option><option>Pechuga ahumada</option><option>Mortadela de pollo</option></select></label><label><span>Presentación</span><select><option>Pieza 5 kg</option><option>Pieza 500 g</option></select></label><label><span>Cantidad planificada</span><div className="input-suffix"><input defaultValue="420" /><span>kg</span></div></label><label><span>Fecha de producción</span><input type="date" defaultValue="2026-11-04" /></label><label className="full"><span>Responsable de turno</span><select><option>Maiques Rincones</option><option>Ana Suárez</option><option>José García</option></select></label></div><div className="formula-callout"><ClipboardCheck size={19} /><div><strong>Fórmula FT-JCE-03 seleccionada</strong><span>Los consumos estimados y controles de calidad se cargarán automáticamente.</span></div></div><footer><button className="secondary-button" onClick={onClose}>Cancelar</button><button className="primary-button" onClick={onCreated}>Crear orden</button></footer></div></div>;
+  return (
+    <div className="modal-backdrop" onMouseDown={onClose}>
+      <div className="modal" onMouseDown={(event) => event.stopPropagation()}>
+        <header><div><p className="eyebrow">PLAN DE PLANTA</p><h2>Nueva orden de producción</h2></div><button className="icon-button" onClick={onClose}><X size={20} /></button></header>
+        <div className="form-grid">
+          <label><span>Producto</span><select defaultValue="Jamón cocido estándar"><option>Jamón cocido estándar</option><option>Salchicha de pollo</option><option>Pechuga ahumada</option><option>Mortadela de pollo</option></select></label>
+          <label><span>Presentación</span><select><option>Pieza 5 kg</option><option>Pieza 500 g</option></select></label>
+          <label><span>Cantidad planificada</span><div className="input-suffix"><input defaultValue="420" /><span>kg</span></div></label>
+          <label><span>Fecha de producción</span><input type="date" defaultValue="2026-11-05" /></label>
+          <label className="full"><span>Responsable de turno</span><select><option>Usuario Prueba</option><option>Ana Suárez</option><option>José García</option></select></label>
+        </div>
+        <div className="formula-callout"><ClipboardCheck size={19} /><div><strong>Fórmula FT-JCE-03 seleccionada</strong><span>Los consumos estimados y controles de calidad se cargarán automáticamente.</span></div></div>
+        <footer><button className="secondary-button" onClick={onClose}>Cancelar</button><button className="primary-button" onClick={onCreated}>Crear orden</button></footer>
+      </div>
+    </div>
+  );
 }
 
 export default function App() {
-  const [page, setPage] = useState<Page>("resumen");
+  const [page, setPage] = useState<Page>(() => {
+    const hashPage = window.location.hash.replace("#", "") as Page;
+    return allNavigation.some((item) => item.id === hashPage) ? hashPage : "resumen";
+  });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [toast, setToast] = useState(false);
-  const currentLabel = useMemo(() => navigation.find((item) => item.id === page)?.label ?? "Resumen", [page]);
+  const currentLabel = useMemo(() => allNavigation.find((item) => item.id === page)?.label ?? "Resumen", [page]);
 
   const navigate = (target: Page) => {
     setPage(target);
+    window.history.replaceState(null, "", `#${target}`);
     setSidebarOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -334,16 +459,14 @@ export default function App() {
           <p>OPERACIÓN</p>
           {navigation.map((item) => { const Icon = item.icon; return <button key={item.id} className={page === item.id ? "active" : ""} onClick={() => navigate(item.id)}><Icon size={19} /><span>{item.label}</span>{item.badge && <b>{item.badge}</b>}</button>; })}
           <p>ADMINISTRACIÓN</p>
-          <button><Users size={19} /><span>Clientes</span></button>
-          <button><FileText size={19} /><span>Finanzas</span></button>
-          <button><Settings size={19} /><span>Configuración</span></button>
+          {administration.map((item) => { const Icon = item.icon; return <button key={item.id} className={page === item.id ? "active" : ""} onClick={() => navigate(item.id)}><Icon size={19} /><span>{item.label}</span></button>; })}
         </nav>
-        <div className="sidebar-foot"><div className="avatar">MR</div><div><strong>Maiques Rincones</strong><span>Jefe de producción</span></div><ChevronDown size={16} /></div>
+        <div className="sidebar-foot"><div className="avatar">UP</div><div><strong>Usuario Prueba</strong><span>Administrador demo</span></div><ChevronDown size={16} /></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
           <div className="topbar-left"><button className="menu-button" onClick={() => setSidebarOpen(true)}><Menu size={21} /></button><span>{currentLabel}</span><ChevronRight size={14} /><strong>Planta Valencia</strong></div>
-          <div className="topbar-right"><label className="global-search"><Search size={17} /><input placeholder="Buscar pedido, lote o cliente…" /><kbd>⌘ K</kbd></label><button className="plant-selector"><span className="online-dot" /> Planta Valencia <ChevronDown size={15} /></button><div className="top-avatar">MR</div></div>
+          <div className="topbar-right"><label className="global-search"><Search size={17} /><input placeholder="Buscar pedido, lote o cliente…" /><kbd>⌘ K</kbd></label><button className="plant-selector"><span className="online-dot" /> Planta Valencia <ChevronDown size={15} /></button><div className="top-avatar">UP</div></div>
         </header>
         <main>
           <div className="demo-disclaimer">Propuesta conceptual · Todos los datos mostrados son simulados para fines demostrativos.</div>
@@ -353,6 +476,9 @@ export default function App() {
           {page === "pedidos" && <Orders />}
           {page === "calidad" && <Quality />}
           {page === "despachos" && <Dispatches />}
+          {page === "clientes" && <Clients />}
+          {page === "finanzas" && <Finance />}
+          {page === "configuracion" && <Configuration />}
         </main>
       </div>
       {modalOpen && <NewProductionModal onClose={() => setModalOpen(false)} onCreated={createOrder} />}
