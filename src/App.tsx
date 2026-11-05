@@ -128,7 +128,7 @@ function Overview({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
     <>
       <PageHeader
-        eyebrow="Miércoles, 4 de noviembre"
+        eyebrow="Jueves, 5 de noviembre"
         title="Buen día, equipo Turza"
         description="Así avanza la operación de planta y distribución hoy."
         action={<button className="primary-button" onClick={() => onNavigate("produccion")}><Plus size={17} /> Nueva producción</button>}
@@ -325,7 +325,10 @@ export default function App() {
     <div className="app-shell">
       {sidebarOpen && <button className="mobile-overlay" aria-label="Cerrar menú" onClick={() => setSidebarOpen(false)} />}
       <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
-        <div className="brand"><div className="brand-symbol">T</div><div><strong>TURZA</strong><span>ERP Industrial</span></div></div>
+        <div className="brand">
+          <img src="/turza-logo.webp" alt="Embutidos Turza" />
+          <span>ERP Industrial</span>
+        </div>
         <div className="demo-tag"><span /> Demostración comercial</div>
         <nav>
           <p>OPERACIÓN</p>
